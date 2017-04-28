@@ -13,6 +13,19 @@ class FirstSpec extends FlatSpec {
       assert(interpret("23*93") === Times(Number(23), Number(93)))
    }
 
+   "Times" should "have higher priority than Plus" in {
+      assert(interpret("2+3*5") === Plus(Number(2), Times(Number(3),
+      Number(5))))
+      assert(interpret("1*3+6") === Plus(Times(Number(1), Number(3)),
+      Number(6)))
+   }
+
+   "Minus" should "be interpreted correctly" in {
+      assert(interpret("5-3") === Minus(Number(5), Number(3)))
+      assert(interpret("5-6-4") === Minus(Minus(Number(5), Number(6)),
+      Number(4)))
+   }
+
    "The string 3*5" should "interpret . evaluate to 15" in {
       val text = "3*5"
       assert(interpret(text).evaluate === 15)
