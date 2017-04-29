@@ -22,23 +22,25 @@ object Interpreter {
   }
 
   case class Minus(left: Expr, right: Expr) extends Expr {
-     def evaluate() = left.evaluate - right.evaluate
+    def evaluate() = left.evaluate - right.evaluate
   }
 
   case class Number(x: Integer) extends Expr {
     def evaluate() = x
   }
 
-  def interpret(text: String): Expr = {
+
+  def interpret(rawText: String): Expr = {
+    val text = rawText.trim
     if (text contains '+') {
       val splittedAtPlus = text split '+'
       val tokens = splittedAtPlus map interpret
       tokens reduce (Plus(_, _))
     }
     else if (text contains '-') {
-       val splittedAtMinus = text split '-'
-       val tokens = splittedAtMinus map interpret
-       tokens reduce (Minus(_,_))
+      val splittedAtMinus = text split '-'
+      val tokens = splittedAtMinus map interpret
+      tokens reduce (Minus(_,_))
     }
     else if (text contains '*') {
       val splittedAtTimes = text split '*'
