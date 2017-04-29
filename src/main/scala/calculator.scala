@@ -1,4 +1,4 @@
-object Interpreter {
+object Calculator {
 
   trait Expr {
     def evaluate(): Integer

@@ -1,5 +1,5 @@
 import org.scalatest.FlatSpec
-import Interpreter._
+import Calculator._
 
 class FirstSpec extends FlatSpec {
    "Numbers" should "be interpreted correctly" in {
