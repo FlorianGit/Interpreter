@@ -1,0 +1,7 @@
+Interpreter
+
+Just a test project to play around a bit with Scala. The idea to write an
+interpreter I got from the blog post "Let's build a simple interpreter", from
+Ruslan's Blog af https://ruslanspivak.com/lsbasi-part1/.
+However, this project might evolve in a different direction, as it is really a
+test project.
