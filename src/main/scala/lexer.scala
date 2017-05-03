@@ -6,8 +6,8 @@ package Lexer {
   case class Minus extends Token
   case class Empty extends Token
 
-  class Lex {
-    def Lex(input: String): List[Token] = {
+  class Lexer(input:String) {
+    def Lex(): List[Token] = {
       val operations = Seq('+', '-')
 
       def LexSingleToken(input: String): (Token, String) = {
