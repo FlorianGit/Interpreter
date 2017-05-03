@@ -7,36 +7,36 @@ package Lexer {
   case class Empty extends Token
 
   class Lexer(input:String) {
+    var currentPos = 0
+
+    def getInteger() = {
+      var result: String = ""
+      while (currentPos < input.length && input(currentPos).isDigit) {
+        result += input(currentPos)
+        currentPos += 1
+      }
+      result.toInt
+    }
+
+    def getNextToken(): Token = input(currentPos) match {
+      case '+' => {
+        currentPos += 1
+        new Plus()
+      }
+      case '-' => {
+        currentPos += 1
+        new Minus()
+      }
+      case _ => new Number(getInteger())
+    }
+
     def Lex(): List[Token] = {
-      val operations = Seq('+', '-')
-
-      def LexSingleToken(input: String): (Token, String) = {
-        if (input.isEmpty) (new Empty(), "") else if (operations contains input.head) {
-          input.head match {
-            case '+' => return (new Plus(), input.tail) 
-            case '-' => return (new Minus(), input.tail)
-          }
-        } else {
-          var tmp = input
-          var n = 0
-          while (!tmp.isEmpty && tmp.head.isDigit) {
-            n *= 10
-            n += tmp.head.asDigit
-            tmp = tmp.tail
-          }
-          return (new Number(n), tmp)
-        }
+      var result = Nil : List[Token]
+      while (currentPos < input.length()) {
+        result = getNextToken() :: result
       }
+      result.reverse
+    }
 
-      var tmp = input
-      var output = Nil : List[Token]
-      while (!tmp.isEmpty) { 
-        val y = LexSingleToken(tmp)
-        tmp = y._2
-        output = y._1 :: output
-      }
-      output.reverse
-    } 
   }
-
 }
