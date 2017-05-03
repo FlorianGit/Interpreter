@@ -18,7 +18,7 @@ package Lexer {
       result.toInt
     }
 
-    def getNextToken(): Token = input(currentPos) match {
+    def getNextToken(): Token = if (currentPos >= input.length()) new Empty else input(currentPos) match {
       case '+' => {
         currentPos += 1
         new Plus()
