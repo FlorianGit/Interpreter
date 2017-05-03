@@ -52,4 +52,13 @@ class parserSpec extends FlatSpec {
       //assert(val lexer = new Lexer(text).evaluate === 15)
       //assert(interpret2(text).evaluate === 15)
    //}
+   "Multiplication" should "work correctly" in {
+     var lexer = new Lexer("3*5")
+     var parser = new Parser(lexer)
+     assert(parser.expr() === 15)
+
+     lexer = new Lexer("3+6*5")
+     parser = new Parser(lexer)
+     assert(parser.expr() === 33)
+   }
 }

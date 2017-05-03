@@ -31,6 +31,8 @@ class Parser(lexer: Lexer) {
   def eat(tokenType: String) = currentToken match {
     case Plus() => if (tokenType == "PLUS") currentToken = lexer.getNextToken() else throw new Exception()
     case Minus() => if (tokenType == "MINUS") currentToken = lexer.getNextToken() else throw new Exception()
+    case Times() => if (tokenType == "TIMES") currentToken = lexer.getNextToken() else throw new Exception()
+    case Div() => if (tokenType == "DIV") currentToken = lexer.getNextToken() else throw new Exception()
     case _ => currentToken = lexer.getNextToken()
   }
 
@@ -40,22 +42,44 @@ class Parser(lexer: Lexer) {
     token match { case Number(n) => n }
   }
 
+  def mult(): Int = {
+    def isMultDiv(t: Token) = t match {
+      case Times() | Div() => true
+      case _ => false
+    }
+
+    var result = factor()
+    while (isMultDiv(currentToken)) {
+      currentToken match {
+        case Times() => {
+          eat("TIMES")
+          result *= factor()
+        }
+        case Div() => {
+          eat("DIV")
+          result /= factor()
+        }
+      }
+    }
+    result
+  }
+
   def expr(): Int = {
     def isPlusMinus(t: Token) = t match {
       case Plus() | Minus() => true
       case _ => false
     }
 
-    var result = factor()
+    var result = mult()
     while (isPlusMinus(currentToken)) {
       currentToken match {
         case Plus() => {
           eat("PLUS")
-          result += factor()
+          result += mult()
         }
         case Minus() => {
           eat("MINUS")
-          result -= factor()
+          result -= mult()
         }
       }
     }
