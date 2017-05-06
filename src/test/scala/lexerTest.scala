@@ -38,9 +38,13 @@ class lexerSpec extends FlatSpec {
    }
 
    "Parentheses" should "be handled correctly" in {
-     val lexer = new Lexer("(3+5)+(2-4)")
+     var lexer = new Lexer("(3+5)+(2-4)")
      assert(lexer.Lex() === List(ParenthesisOpen(), Number(3), Plus(), Number(5), ParenthesisClose(), Plus(), ParenthesisOpen(), Number(2), Minus(), Number(4), ParenthesisClose()))
+
+     lexer = new Lexer("7+3*(10/(12/(3+1)-1))")
+     assert(lexer.Lex() === List(Number(7),Plus(),Number(3),Times(),ParenthesisOpen(), Number(10), Div(), ParenthesisOpen(), Number(12), Div(), ParenthesisOpen(), Number(3), Plus(), Number(1), ParenthesisClose(), Minus(), Number(1), ParenthesisClose(), ParenthesisClose()))
    }
+
 
    //"The string 3*5" should "interpret . evaluate to 15" in {
       //val text = "3*5"

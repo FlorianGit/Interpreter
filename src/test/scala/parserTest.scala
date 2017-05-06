@@ -70,5 +70,21 @@ class parserSpec extends FlatSpec {
      lexer = new Lexer("(3+5)*((2-1)+(4+3))")
      parser = new Parser(lexer)
      assert(parser.expr() === 64)
+
+     lexer = new Lexer("(12/(3+1))")
+     parser = new Parser(lexer)
+     assert(parser.expr() == 3)
+
+     lexer = new Lexer("12/(3+1)-1")
+     parser = new Parser(lexer)
+     assert(parser.expr() === 2)
+
+     lexer = new Lexer("10/(12/(3+1)-1)")
+     parser = new Parser(lexer)
+     assert(parser.expr() === 5)
+
+     lexer = new Lexer("7+3*(10/(12/(3+1)-1))")
+     parser = new Parser(lexer)
+     assert(parser.expr() === 22)
    }
 }

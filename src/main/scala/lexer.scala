@@ -37,7 +37,7 @@ package Lexer {
       }
       case '/' => {
         currentPos += 1
-        new Times()
+        new Div()
       }
       case '(' => {
         currentPos += 1
