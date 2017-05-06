@@ -61,4 +61,14 @@ class parserSpec extends FlatSpec {
      parser = new Parser(lexer)
      assert(parser.expr() === 33)
    }
+
+   "Parentheses" should "go before all other operations" in {
+     var lexer = new Lexer("(3+5)*2")
+     var parser = new Parser(lexer)
+     assert(parser.expr() === 16)
+
+     lexer = new Lexer("(3+5)*((2-1)+(4+3))")
+     parser = new Parser(lexer)
+     assert(parser.expr() === 64)
+   }
 }

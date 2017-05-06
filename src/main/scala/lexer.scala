@@ -7,6 +7,8 @@ package Lexer {
   case class Times extends Token
   case class Div extends Token
   case class Empty extends Token
+  case class ParenthesisOpen extends Token
+  case class ParenthesisClose extends Token
 
   class Lexer(input:String) {
     var currentPos = 0
@@ -36,6 +38,14 @@ package Lexer {
       case '/' => {
         currentPos += 1
         new Times()
+      }
+      case '(' => {
+        currentPos += 1
+        new ParenthesisOpen()
+      }
+      case ')' => {
+        currentPos += 1
+        new ParenthesisClose()
       }
       case _ => new Number(getInteger())
     }

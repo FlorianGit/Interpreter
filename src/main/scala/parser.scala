@@ -33,13 +33,23 @@ class Parser(lexer: Lexer) {
     case Minus() => if (tokenType == "MINUS") currentToken = lexer.getNextToken() else throw new Exception()
     case Times() => if (tokenType == "TIMES") currentToken = lexer.getNextToken() else throw new Exception()
     case Div() => if (tokenType == "DIV") currentToken = lexer.getNextToken() else throw new Exception()
+    case ParenthesisOpen() => if (tokenType == "PARENTHOPEN") currentToken = lexer.getNextToken() else throw new Exception()
+    case ParenthesisClose() => if (tokenType == "PARENTHCLOSE") currentToken = lexer.getNextToken() else throw new Exception()
     case _ => currentToken = lexer.getNextToken()
   }
 
-  def factor(): Int = {
-    val token = currentToken
-    eat("INTEGER")
-    token match { case Number(n) => n }
+  def factor(): Int = currentToken match {
+    case ParenthesisOpen() => {
+      eat("PARENTHOPEN")
+      val ret = expr()
+      eat("PARENTHCLOSE")
+      ret
+    }
+    case _ => {
+      val token = currentToken
+      eat("INTEGER")
+      token match { case Number(n) => n }
+    }
   }
 
   def mult(): Int = {
