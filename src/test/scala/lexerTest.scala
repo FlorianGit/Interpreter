@@ -41,7 +41,7 @@ class lexerSpec extends FlatSpec {
      var lexer = new Lexer("(3+5)+(2-4)")
      assert(lexer.Lex() === List(ParenthesisOpen(), Number(3), Plus(), Number(5), ParenthesisClose(), Plus(), ParenthesisOpen(), Number(2), Minus(), Number(4), ParenthesisClose()))
 
-     lexer = new Lexer("7+3*(10/(12/(3+1)-1))")
+     lexer = new Lexer("7 + 3 * (10 / (12 / (3 + 1) - 1))")
      assert(lexer.Lex() === List(Number(7),Plus(),Number(3),Times(),ParenthesisOpen(), Number(10), Div(), ParenthesisOpen(), Number(12), Div(), ParenthesisOpen(), Number(3), Plus(), Number(1), ParenthesisClose(), Minus(), Number(1), ParenthesisClose(), ParenthesisClose()))
    }
 

@@ -23,6 +23,10 @@ package Lexer {
     }
 
     def getNextToken(): Token = if (currentPos >= input.length()) new Empty else input(currentPos) match {
+      case ' ' => {
+        currentPos += 1
+        getNextToken()
+      }
       case '+' => {
         currentPos += 1
         new Plus()
