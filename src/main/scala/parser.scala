@@ -2,7 +2,7 @@ import Lexer._
 
 trait AST
 case class BinOp(op: Token, left: AST, right: AST) extends AST
-case class Numerical(n: Token) extends AST
+case class Number(n: Token) extends AST
 
 class Parser(lexer: Lexer) {
   trait Phrase
@@ -52,7 +52,7 @@ class Parser(lexer: Lexer) {
     case _ => {
       val token = currentToken
       eat("INTEGER")
-      new Numerical(token)
+      new Number(token)
     }
   }
 
