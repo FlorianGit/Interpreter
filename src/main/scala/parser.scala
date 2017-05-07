@@ -1,5 +1,9 @@
 import Lexer._
 
+trait AST
+case class BinOp(op: Token, left: AST, right: AST) extends AST
+case class Numerical(n: Token) extends AST
+
 class Parser(lexer: Lexer) {
   trait Phrase
   case class PNumber(n: Int) extends Phrase
@@ -9,24 +13,24 @@ class Parser(lexer: Lexer) {
 
   var currentToken = lexer.getNextToken()
 
-  def Parse(input: List[Token]): Phrase = {
+  //def Parse(input: List[Token]): Phrase = {
 
-    def helper(p: Phrase, rem: List[Token]): Phrase = if (rem.isEmpty) p else rem.head match {
-      case Number(n) => PNumber(n)
-      case Plus() => rem.tail.head match {
-        case Number(m) => helper(new PPlus(p, new PNumber(m)), rem.tail.tail)
-        case _ => new PEmpty
-      }
-        case Minus() => rem.tail.head match {
-          case Number(m) => helper(new PMinus(p, new PNumber(m)), rem.tail.tail)
-          case _ => new PEmpty
-        }
-    }
+    //def helper(p: Phrase, rem: List[Token]): Phrase = if (rem.isEmpty) p else rem.head match {
+      //case Number(n) => PNumber(n)
+      //case Plus() => rem.tail.head match {
+        //case Number(m) => helper(new PPlus(p, new PNumber(m)), rem.tail.tail)
+        //case _ => new PEmpty
+      //}
+        //case Minus() => rem.tail.head match {
+          //case Number(m) => helper(new PMinus(p, new PNumber(m)), rem.tail.tail)
+          //case _ => new PEmpty
+        //}
+    //}
 
-    if (input.isEmpty) new PEmpty() else input.head match {
-      case Number(n) => helper(PNumber(n), input.tail)
-    }
-  }
+    //if (input.isEmpty) new PEmpty() else input.head match {
+      //case Number(n) => helper(PNumber(n), input.tail)
+    //}
+  //}
 
   def eat(tokenType: String) = currentToken match {
     case Plus() => if (tokenType == "PLUS") currentToken = lexer.getNextToken() else throw new Exception()
@@ -38,7 +42,7 @@ class Parser(lexer: Lexer) {
     case _ => currentToken = lexer.getNextToken()
   }
 
-  def factor(): Int = currentToken match {
+  def factor(): AST = currentToken match {
     case ParenthesisOpen() => {
       eat("PARENTHOPEN")
       val ret = expr()
@@ -48,11 +52,11 @@ class Parser(lexer: Lexer) {
     case _ => {
       val token = currentToken
       eat("INTEGER")
-      token match { case Number(n) => n }
+      new Numerical(token)
     }
   }
 
-  def mult(): Int = {
+  def mult(): AST = {
     def isMultDiv(t: Token) = t match {
       case Times() | Div() => true
       case _ => false
@@ -63,18 +67,18 @@ class Parser(lexer: Lexer) {
       currentToken match {
         case Times() => {
           eat("TIMES")
-          result *= factor()
+          result = new BinOp(new Times(), result, factor())
         }
         case Div() => {
           eat("DIV")
-          result /= factor()
+          result = new BinOp(new Div(), result, factor())
         }
       }
     }
     result
   }
 
-  def expr(): Int = {
+  def expr(): AST = {
     def isPlusMinus(t: Token) = t match {
       case Plus() | Minus() => true
       case _ => false
@@ -85,11 +89,11 @@ class Parser(lexer: Lexer) {
       currentToken match {
         case Plus() => {
           eat("PLUS")
-          result += mult()
+          result = new BinOp(new Plus(), result, mult())
         }
         case Minus() => {
           eat("MINUS")
-          result -= mult()
+          result = new BinOp(new Minus(), result, mult())
         }
       }
     }
