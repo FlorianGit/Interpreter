@@ -1,7 +1,7 @@
 package Lexer {
 
   trait Token
-  case class Number(n: Int) extends Token
+  case class IntToken(n: Int) extends Token
   case class Plus extends Token
   case class Minus extends Token
   case class Times extends Token
@@ -51,7 +51,7 @@ package Lexer {
         currentPos += 1
         new ParenthesisClose()
       }
-      case _ => new Number(getInteger())
+      case _ => new IntToken(getInteger())
     }
 
     def Lex(): List[Token] = {
