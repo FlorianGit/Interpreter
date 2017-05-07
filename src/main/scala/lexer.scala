@@ -6,7 +6,7 @@ package Lexer {
   case class Minus extends Token
   case class Times extends Token
   case class Div extends Token
-  case class Empty extends Token
+  case class EOF extends Token
   case class ParenthesisOpen extends Token
   case class ParenthesisClose extends Token
 
@@ -22,7 +22,7 @@ package Lexer {
       result.toInt
     }
 
-    def getNextToken(): Token = if (currentPos >= input.length()) new Empty else input(currentPos) match {
+    def getNextToken(): Token = if (currentPos >= input.length()) new EOF else input(currentPos) match {
       case ' ' => {
         currentPos += 1
         getNextToken()
