@@ -1,5 +1,6 @@
 import org.scalatest.FlatSpec
 import Lexer._
+import Parser._
 
 class parserSpec extends FlatSpec {
    "IntTokens" should "be interpreted correctly" in {
