@@ -122,4 +122,16 @@ class parserSpec extends FlatSpec {
      parser = new Parser(lexer)
      assert(interpreter.evaluate(parser.expr()) === 22) 
    }
+
+   "Assigment" should "work" in {
+     var lexer = new Lexer("x:=5")
+     var parser = new Parser(lexer)
+     assert(parser.assignment_statement() === Assign(Id("x"), Number(IntToken(5))))
+
+     lexer = new Lexer("variable:= (3 + 5) * y")
+     parser = new Parser(lexer)
+     assert(parser.assignment_statement() === Assign(Id("variable"), BinOp(Times(), BinOp(Plus(), Number(IntToken(3)), Number(IntToken(5))), Var(Id("y")))))
+   }
+
+
 }

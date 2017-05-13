@@ -4,6 +4,8 @@ package Parser {
   trait AST
   case class BinOp(op: Token, left: AST, right: AST) extends AST
   case class Number(n: Token) extends AST
+  case class Assign(id: Token, rhs: AST) extends AST
+  case class Var(id: Token) extends AST
 
   class Parser(lexer: Lexer) {
     var currentToken = lexer.getNextToken()
@@ -15,6 +17,8 @@ package Parser {
       case Div() => if (tokenType == "DIV") currentToken = lexer.getNextToken() else throw new Exception()
       case ParenthesisOpen() => if (tokenType == "PARENTHOPEN") currentToken = lexer.getNextToken() else throw new Exception()
       case ParenthesisClose() => if (tokenType == "PARENTHCLOSE") currentToken = lexer.getNextToken() else throw new Exception()
+      case Id(_) => if (tokenType == "ID") currentToken = lexer.getNextToken else throw new Exception()
+      case AssignToken() => if (tokenType == "ASSIGN") currentToken = lexer.getNextToken else throw new Exception()
       case _ => currentToken = lexer.getNextToken()
     }
 
@@ -25,10 +29,14 @@ package Parser {
         eat("PARENTHCLOSE")
         ret
       }
-      case _ => {
-        val token = currentToken
-        eat("INTEGER")
-        new Number(token)
+      case token => {
+        if (token match { case IntToken(_) => true; case _ => false }) {
+          eat("INTEGER")
+          new Number(token)
+        } else {
+          eat("ID")
+          new Var(token)
+        }
       }
     }
 
@@ -75,5 +83,13 @@ package Parser {
       }
       result
     }
+
+    def assignment_statement(): AST = {
+        val varToken = currentToken
+        eat("ID")
+        eat("ASSIGN")
+        new Assign(varToken, expr())
+    }
+
   }
 }
