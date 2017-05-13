@@ -9,7 +9,7 @@ package Lexer {
   case class EOF() extends Token
   case class ParenthesisOpen() extends Token
   case class ParenthesisClose() extends Token
-  case class Assign() extends Token
+  case class AssignToken() extends Token
   case class Id(name: String) extends Token
 
   class Lexer(input:String) {
@@ -67,7 +67,7 @@ package Lexer {
       case ':' => {
         if (peek() != '=') throw new Exception else
           currentPos += 2
-          new Assign()
+          new AssignToken()
       }
       case c => {
         if (c.isDigit) {

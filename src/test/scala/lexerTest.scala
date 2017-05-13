@@ -47,8 +47,11 @@ class lexerSpec extends FlatSpec {
 
    "Assignment" should "work correctly" in {
      var lexer = new Lexer("x:=5")
-     assert(lexer.Lex() === List(Id("x"), Assign(), IntToken(5)))
+     assert(lexer.Lex() === List(Id("x"), AssignToken(), IntToken(5)))
      lexer = new Lexer("variable := 12")
-     assert(lexer.Lex() === List(Id("variable"), Assign(), IntToken(12)))
+     assert(lexer.Lex() === List(Id("variable"), AssignToken(), IntToken(12)))
+
+     lexer = new Lexer("variable:= (3 + 5) * y")
+     assert(lexer.Lex() === List(Id("variable"), AssignToken(), ParenthesisOpen(), IntToken(3), Plus(), IntToken(5), ParenthesisClose(), Times(), Id("y")))
    }
 }
