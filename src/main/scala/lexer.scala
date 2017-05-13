@@ -24,6 +24,17 @@ package Lexer {
       result.toInt
     }
 
+    def getWord(): String = {
+      var result: String = ""
+      while (currentPos < input.length && input(currentPos).isLetter) {
+        result += input(currentPos)
+        currentPos += 1
+      }
+      result
+    }
+
+    def peek(): Char = if (currentPos >= input.length() - 1) ' ' else input(currentPos + 1)
+
     def getNextToken(): Token = if (currentPos >= input.length()) new EOF else input(currentPos) match {
       case ' ' => {
         currentPos += 1
@@ -53,7 +64,19 @@ package Lexer {
         currentPos += 1
         new ParenthesisClose()
       }
-      case _ => new IntToken(getInteger())
+      case ':' => {
+        if (peek() != '=') throw new Exception else
+          currentPos += 2
+          new Assign()
+      }
+      case c => {
+        if (c.isDigit) {
+          new IntToken(getInteger())
+        }
+        else {
+          new Id(getWord())
+        }
+      }
     }
 
     def Lex(): List[Token] = {

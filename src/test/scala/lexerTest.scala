@@ -45,10 +45,10 @@ class lexerSpec extends FlatSpec {
      assert(lexer.Lex() === List(IntToken(7),Plus(),IntToken(3),Times(),ParenthesisOpen(), IntToken(10), Div(), ParenthesisOpen(), IntToken(12), Div(), ParenthesisOpen(), IntToken(3), Plus(), IntToken(1), ParenthesisClose(), Minus(), IntToken(1), ParenthesisClose(), ParenthesisClose()))
    }
 
-
-   //"The string 3*5" should "interpret . evaluate to 15" in {
-      //val text = "3*5"
-      //assert(val lexer = new Lexer(text).evaluate === 15)
-      //assert(interpret2(text).evaluate === 15)
-   //}
+   "Assignment" should "work correctly" in {
+     var lexer = new Lexer("x:=5")
+     assert(lexer.Lex() === List(Id("x"), Assign(), IntToken(5)))
+     lexer = new Lexer("variable := 12")
+     assert(lexer.Lex() === List(Id("variable"), Assign(), IntToken(12)))
+   }
 }
