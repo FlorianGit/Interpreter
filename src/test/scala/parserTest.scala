@@ -28,7 +28,6 @@ class parserSpec extends FlatSpec {
    }
 
    "Minus" should "be interpreted correctly" in {
-     
       var lexer = new Lexer("5-3")
       var parser = new Parser(lexer)
       assert(parser.expr() === BinOp(Minus(), Number(IntToken(5)), Number(IntToken(3))))
