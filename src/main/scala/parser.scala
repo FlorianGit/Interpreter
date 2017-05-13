@@ -6,11 +6,6 @@ package Parser {
   case class Number(n: Token) extends AST
 
   class Parser(lexer: Lexer) {
-    trait Phrase
-    case class PIntToken(n: Int) extends Phrase
-    case class PPlus(a: Phrase, b: Phrase) extends Phrase
-    case class PMinus(a: Phrase, b: Phrase) extends Phrase
-
     var currentToken = lexer.getNextToken()
 
     def eat(tokenType: String) = currentToken match {
