@@ -2,13 +2,15 @@ package Lexer {
 
   trait Token
   case class IntToken(n: Int) extends Token
-  case class Plus extends Token
-  case class Minus extends Token
-  case class Times extends Token
-  case class Div extends Token
-  case class EOF extends Token
-  case class ParenthesisOpen extends Token
-  case class ParenthesisClose extends Token
+  case class Plus() extends Token
+  case class Minus() extends Token
+  case class Times() extends Token
+  case class Div() extends Token
+  case class EOF() extends Token
+  case class ParenthesisOpen() extends Token
+  case class ParenthesisClose() extends Token
+  case class Assign() extends Token
+  case class Id(name: String) extends Token
 
   class Lexer(input:String) {
     var currentPos = 0
