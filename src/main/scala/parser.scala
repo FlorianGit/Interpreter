@@ -33,9 +33,9 @@ package Parser {
         eat(typeTag[ParenthesisClose])
         ret
       }
-      case IntToken(_) => {
+      case IntConst(_) => {
           val token = currentToken
-          eat(typeTag[IntToken])
+          eat(typeTag[IntConst])
           new Number(token)
         }
       case _  => {

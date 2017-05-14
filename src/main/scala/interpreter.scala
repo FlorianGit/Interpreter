@@ -7,7 +7,7 @@ package Interpreter {
     var varTable = new HashMap[String, Int]
 
     def releaseNumber(t: Token) = t match {
-      case IntToken(n) => n
+      case IntConst(n) => n
       case _ => 0
     }
 

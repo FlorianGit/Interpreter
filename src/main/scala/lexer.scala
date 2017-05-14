@@ -1,7 +1,7 @@
 package Lexer {
 
   trait Token
-  case class IntToken(n: Int) extends Token
+  case class IntConst(n: Int) extends Token
   case class Plus() extends Token
   case class Minus() extends Token
   case class Times() extends Token
@@ -81,7 +81,7 @@ package Lexer {
         currentPos += 1
         new Dot()
       }
-      case c if (c.isDigit) => new IntToken(getInteger())
+      case c if (c.isDigit) => new IntConst(getInteger())
       case c => {
           val nextWord = getWord()
           nextWord match {
