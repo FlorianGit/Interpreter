@@ -1,3 +1,4 @@
+import scala.collection.mutable.ArrayBuffer
 import Lexer._
 
 package Parser {
@@ -6,19 +7,21 @@ package Parser {
   case class Number(n: Token) extends AST
   case class Assign(id: Token, rhs: AST) extends AST
   case class Var(id: Token) extends AST
+  case class StatementList(statements: ArrayBuffer[AST]) extends AST
+  case class NoOp() extends AST
 
   class Parser(lexer: Lexer) {
     var currentToken = lexer.getNextToken()
 
     def eat(tokenType: String) = currentToken match {
-      case Plus() => if (tokenType == "PLUS") currentToken = lexer.getNextToken() else throw new Exception()
-      case Minus() => if (tokenType == "MINUS") currentToken = lexer.getNextToken() else throw new Exception()
-      case Times() => if (tokenType == "TIMES") currentToken = lexer.getNextToken() else throw new Exception()
-      case Div() => if (tokenType == "DIV") currentToken = lexer.getNextToken() else throw new Exception()
-      case ParenthesisOpen() => if (tokenType == "PARENTHOPEN") currentToken = lexer.getNextToken() else throw new Exception()
-      case ParenthesisClose() => if (tokenType == "PARENTHCLOSE") currentToken = lexer.getNextToken() else throw new Exception()
-      case Id(_) => if (tokenType == "ID") currentToken = lexer.getNextToken else throw new Exception()
-      case AssignToken() => if (tokenType == "ASSIGN") currentToken = lexer.getNextToken else throw new Exception()
+      case Plus() => if (tokenType == "PLUS") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
+      case Minus() => if (tokenType == "MINUS") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
+      case Times() => if (tokenType == "TIMES") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ "expteced, " ++ currentToken.toString)
+      case Div() => if (tokenType == "DIV") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
+      case ParenthesisOpen() => if (tokenType == "PARENTHOPEN") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
+      case ParenthesisClose() => if (tokenType == "PARENTHCLOSE") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
+      case Id(_) => if (tokenType == "ID") currentToken = lexer.getNextToken else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
+      case AssignToken() => if (tokenType == "ASSIGN") currentToken = lexer.getNextToken else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
       case _ => currentToken = lexer.getNextToken()
     }
 
@@ -29,15 +32,16 @@ package Parser {
         eat("PARENTHCLOSE")
         ret
       }
-      case token => {
-        if (token match { case IntToken(_) => true; case _ => false }) {
+      case IntToken(_) => {
+          val token = currentToken
           eat("INTEGER")
           new Number(token)
-        } else {
+        }
+      case _  => {
+          val token = currentToken
           eat("ID")
           new Var(token)
         }
-      }
     }
 
     def mult(): AST = {
@@ -89,6 +93,34 @@ package Parser {
         eat("ID")
         eat("ASSIGN")
         new Assign(varToken, expr())
+    }
+
+    def statement(): AST = currentToken match {
+      case Begin() => compound_statement()
+      case Id(_) => assignment_statement()
+      case _ => new NoOp()
+    }
+
+    def statement_list(): AST = {
+      val childStatements = ArrayBuffer(statement())
+      while (currentToken == SemiColon()) {
+        eat("SEMICOLON")
+        childStatements += statement()
+      }
+      new StatementList(childStatements)
+    }
+
+    def compound_statement(): AST = {
+      eat("BEGIN")
+      val result = statement_list()
+      eat("END")
+      result
+    }
+
+    def program(): AST = {
+      val result = compound_statement()
+      eat("DOT")
+      result
     }
 
   }

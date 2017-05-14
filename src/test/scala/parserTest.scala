@@ -1,4 +1,5 @@
 import org.scalatest.FlatSpec
+import scala.collection.mutable.ArrayBuffer
 import Lexer._
 import Parser._
 
@@ -132,5 +133,26 @@ class parserSpec extends FlatSpec {
      assert(parser.assignment_statement() === Assign(Id("variable"), BinOp(Times(), BinOp(Plus(), Number(IntToken(3)), Number(IntToken(5))), Var(Id("y")))))
    }
 
+   "A small program" should "be parsed correctly" in {
+     val smallProgram = """
+     BEGIN
+        BEGIN
+           number := 2;
+           a := number;
+           b := 10 * a + 10 * number / 4;
+           c := a - b;
+        END;
+        x := 10
+     END.
+     """
+     def st1 = Assign(Id("number"), Number(IntToken(2)))
+     def st2 = Assign(Id("a"), Var(Id("number")))
+     def st3 = Assign(Id("b"), BinOp(Plus(), BinOp(Times(), Number(IntToken(10)), Var(Id("a"))), BinOp(Div(), BinOp(Times(), Number(IntToken(10)), Var(Id("number"))), Number((IntToken(4))))))
+     def st4 = Assign(Id("c"), BinOp(Minus(), Var(Id("a")), Var(Id("b"))))
+     def st5 = Assign(Id("x"), Number(IntToken(10)))
+     def lexer = new Lexer(smallProgram)
+     def parser = new Parser(lexer)
+     assert(parser.program() === StatementList(ArrayBuffer(StatementList(ArrayBuffer(st1, st2, st3, st4, NoOp())), st5)))
+   }
 
 }

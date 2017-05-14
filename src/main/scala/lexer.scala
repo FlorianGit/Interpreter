@@ -11,6 +11,10 @@ package Lexer {
   case class ParenthesisClose() extends Token
   case class AssignToken() extends Token
   case class Id(name: String) extends Token
+  case class Dot() extends Token
+  case class SemiColon() extends Token
+  case class Begin() extends Token
+  case class End() extends Token
 
   class Lexer(input:String) {
     var currentPos = 0
@@ -36,7 +40,7 @@ package Lexer {
     def peek(): Char = if (currentPos >= input.length() - 1) ' ' else input(currentPos + 1)
 
     def getNextToken(): Token = if (currentPos >= input.length()) new EOF else input(currentPos) match {
-      case ' ' => {
+      case ' ' | '\n' => {
         currentPos += 1
         getNextToken()
       }
@@ -69,12 +73,25 @@ package Lexer {
           currentPos += 2
           new AssignToken()
       }
+      case ';' => {
+        currentPos += 1
+        new SemiColon()
+      }
+      case '.' => {
+        currentPos += 1
+        new Dot()
+      }
       case c => {
         if (c.isDigit) {
           new IntToken(getInteger())
         }
         else {
-          new Id(getWord())
+          val nextWord = getWord()
+          nextWord match {
+            case "BEGIN" => new Begin()
+            case "END" => new End()
+            case _ => new Id(nextWord)
+          }
         }
       }
     }

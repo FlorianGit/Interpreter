@@ -15,22 +15,7 @@ class lexerSpec extends FlatSpec {
      assert (lexer.Lex() === List(IntToken(3), Plus(), IntToken(5), Plus(), IntToken(6)))
    }
 
-   //"The char *" should "be interpreted to Times" in {
-      //assert(val lexer = new Lexer("3*5") === Times(IntToken(3), IntToken(5)))
-      //assert(val lexer = new Lexer("23*93") === Times(IntToken(23), IntToken(93)))
-      //assert(interpret2("3*5") === Times(IntToken(3), IntToken(5)))
-      //assert(interpret2("23*93") === Times(IntToken(23), IntToken(93)))
-   //}
-
-   //"Times" should "have higher priority than Plus" in {
-      //assert(val lexer = new Lexer("2+3*5") === Plus(IntToken(2), Times(IntToken(3), IntToken(5))))
-      //assert(val lexer = new Lexer("1*3+6") === Plus(Times(IntToken(1), IntToken(3)), IntToken(6)))
-      //assert(interpret2("2+3*5") === Plus(IntToken(2), Times(IntToken(3), IntToken(5))))
-      //assert(interpret2("1*3+6") === Plus(Times(IntToken(1), IntToken(3)), IntToken(6)))
-   //}
-
    "Minus" should "be interpreted correctly" in {
-     
       var lexer = new Lexer("5-3")
       assert(lexer.Lex() === List(IntToken(5), Minus(), IntToken(3)))
       lexer = new Lexer("5-6-4")
@@ -54,4 +39,26 @@ class lexerSpec extends FlatSpec {
      lexer = new Lexer("variable:= (3 + 5) * y")
      assert(lexer.Lex() === List(Id("variable"), AssignToken(), ParenthesisOpen(), IntToken(3), Plus(), IntToken(5), ParenthesisClose(), Times(), Id("y")))
    }
+
+   "A small program" should "be lexed correctly" in {
+     val smallProgram = """
+     BEGIN
+        BEGIN
+           number := 2;
+           a := number;
+           b := 10 * a + 10 * number / 4;
+           c := a - b;
+        END;
+        x := 10
+     END.
+     """
+     def st1 = List(Id("number"), AssignToken(), IntToken(2), SemiColon())
+     def st2 = List(Id("a"), AssignToken(), Id("number"), SemiColon())
+     def st3 = List(Id("b"), AssignToken(), IntToken(10), Times(), Id("a"), Plus(), IntToken(10), Times(), Id("number"), Div(), IntToken(4), SemiColon())
+     def st4 = List(Id("c"), AssignToken(), Id("a"), Minus(), Id("b"), SemiColon())
+     def st5 = List(Id("x"), AssignToken(), IntToken(10))
+     def lexer = new Lexer(smallProgram)
+     assert(lexer.Lex() === List(Begin(), Begin()) ++ st1 ++ st2 ++ st3 ++ st4 ++ List(End(), SemiColon()) ++ st5 ++ List(End(), Dot(), EOF()))
+   }
+
 }
