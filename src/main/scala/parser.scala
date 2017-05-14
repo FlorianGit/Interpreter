@@ -1,4 +1,5 @@
 import scala.collection.mutable.ArrayBuffer
+import reflect.runtime.universe.{TypeTag, typeTag}
 import Lexer._
 
 package Parser {
@@ -13,33 +14,33 @@ package Parser {
   class Parser(lexer: Lexer) {
     var currentToken = lexer.getNextToken()
 
-    def eat(tokenType: String) = currentToken match {
-      case Plus() => if (tokenType == "PLUS") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
-      case Minus() => if (tokenType == "MINUS") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
-      case Times() => if (tokenType == "TIMES") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ "expteced, " ++ currentToken.toString)
-      case Div() => if (tokenType == "DIV") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
-      case ParenthesisOpen() => if (tokenType == "PARENTHOPEN") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
-      case ParenthesisClose() => if (tokenType == "PARENTHCLOSE") currentToken = lexer.getNextToken() else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
-      case Id(_) => if (tokenType == "ID") currentToken = lexer.getNextToken else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
-      case AssignToken() => if (tokenType == "ASSIGN") currentToken = lexer.getNextToken else throw new Exception(tokenType ++ " expected, " ++ currentToken.toString)
+    def eat[T](tokenType: TypeTag[T]) = currentToken match {
+      case Plus() => if (tokenType == typeTag[Plus]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
+      case Minus() => if (tokenType == typeTag[Minus]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
+      case Times() => if (tokenType == typeTag[Times]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ "expteced, " ++ currentToken.toString)
+      case Div() => if (tokenType == typeTag[Div]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
+      case ParenthesisOpen() => if (tokenType == typeTag[ParenthesisOpen]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
+      case ParenthesisClose() => if (tokenType == typeTag[ParenthesisClose]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
+      case Id(_) => if (tokenType == typeTag[Id]) currentToken = lexer.getNextToken else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
+      case AssignToken() => if (tokenType == typeTag[AssignToken]) currentToken = lexer.getNextToken else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
       case _ => currentToken = lexer.getNextToken()
     }
 
     def factor(): AST = currentToken match {
       case ParenthesisOpen() => {
-        eat("PARENTHOPEN")
+        eat(typeTag[ParenthesisOpen])
         val ret = expr()
-        eat("PARENTHCLOSE")
+        eat(typeTag[ParenthesisClose])
         ret
       }
       case IntToken(_) => {
           val token = currentToken
-          eat("INTEGER")
+          eat(typeTag[IntToken])
           new Number(token)
         }
       case _  => {
           val token = currentToken
-          eat("ID")
+          eat(typeTag[Id])
           new Var(token)
         }
     }
@@ -54,11 +55,11 @@ package Parser {
       while (isMultDiv(currentToken)) {
         currentToken match {
           case Times() => {
-            eat("TIMES")
+            eat(typeTag[Times])
             result = new BinOp(new Times(), result, factor())
           }
           case Div() => {
-            eat("DIV")
+            eat(typeTag[Div])
             result = new BinOp(new Div(), result, factor())
           }
         }
@@ -76,11 +77,11 @@ package Parser {
       while (isPlusMinus(currentToken)) {
         currentToken match {
           case Plus() => {
-            eat("PLUS")
+            eat(typeTag[Plus])
             result = new BinOp(new Plus(), result, mult())
           }
           case Minus() => {
-            eat("MINUS")
+            eat(typeTag[Minus])
             result = new BinOp(new Minus(), result, mult())
           }
         }
@@ -90,8 +91,8 @@ package Parser {
 
     def assignment_statement(): AST = {
         val varToken = currentToken
-        eat("ID")
-        eat("ASSIGN")
+        eat(typeTag[Id])
+        eat(typeTag[AssignToken])
         new Assign(varToken, expr())
     }
 
@@ -104,22 +105,22 @@ package Parser {
     def statement_list(): AST = {
       val childStatements = ArrayBuffer(statement())
       while (currentToken == SemiColon()) {
-        eat("SEMICOLON")
+        eat(typeTag[SemiColon])
         childStatements += statement()
       }
       new StatementList(childStatements)
     }
 
     def compound_statement(): AST = {
-      eat("BEGIN")
+      eat(typeTag[Begin])
       val result = statement_list()
-      eat("END")
+      eat(typeTag[End])
       result
     }
 
     def program(): AST = {
       val result = compound_statement()
-      eat("DOT")
+      eat(typeTag[Dot])
       result
     }
 
