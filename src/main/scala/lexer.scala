@@ -81,11 +81,8 @@ package Lexer {
         currentPos += 1
         new Dot()
       }
+      case c if (c.isDigit) => new IntToken(getInteger())
       case c => {
-        if (c.isDigit) {
-          new IntToken(getInteger())
-        }
-        else {
           val nextWord = getWord()
           nextWord match {
             case "BEGIN" => new Begin()
@@ -93,7 +90,6 @@ package Lexer {
             case _ => new Id(nextWord)
           }
         }
-      }
     }
 
     def Lex(): List[Token] = {
