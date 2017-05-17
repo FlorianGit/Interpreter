@@ -1,5 +1,5 @@
 import scala.collection.mutable.ArrayBuffer
-import reflect.runtime.universe.{TypeTag, typeTag}
+import reflect.ClassTag
 import Lexer._
 
 package Parser {
@@ -14,33 +14,24 @@ package Parser {
   class Parser(lexer: Lexer) {
     var currentToken = lexer.getNextToken()
 
-    def eat[T](tokenType: TypeTag[T]) = currentToken match {
-      case Plus() => if (tokenType == typeTag[Plus]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
-      case Minus() => if (tokenType == typeTag[Minus]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
-      case Times() => if (tokenType == typeTag[Times]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ "expteced, " ++ currentToken.toString)
-      case IntDiv() => if (tokenType == typeTag[IntDiv]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
-      case ParenthesisOpen() => if (tokenType == typeTag[ParenthesisOpen]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
-      case ParenthesisClose() => if (tokenType == typeTag[ParenthesisClose]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
-      case Id(_) => if (tokenType == typeTag[Id]) currentToken = lexer.getNextToken else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
-      case AssignToken() => if (tokenType == typeTag[AssignToken]) currentToken = lexer.getNextToken else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
-      case _ => currentToken = lexer.getNextToken()
-    }
+    def eat[T](implicit T: ClassTag[T]) =
+      if (T.runtimeClass == currentToken.getClass) currentToken = lexer.getNextToken() else throw new Exception(T.runtimeClass.toString ++ " Expected. Received:" ++ currentToken.getClass.toString)
 
     def factor(): AST = currentToken match {
       case ParenthesisOpen() => {
-        eat(typeTag[ParenthesisOpen])
+        eat[ParenthesisOpen]
         val ret = expr()
-        eat(typeTag[ParenthesisClose])
+        eat[ParenthesisClose]
         ret
       }
       case IntConst(_) => {
           val token = currentToken
-          eat(typeTag[IntConst])
+          eat[IntConst]
           new Number(token)
         }
       case _  => {
           val token = currentToken
-          eat(typeTag[Id])
+          eat[Id]
           new Var(token)
         }
     }
@@ -55,11 +46,11 @@ package Parser {
       while (isMultIntDiv(currentToken)) {
         currentToken match {
           case Times() => {
-            eat(typeTag[Times])
+            eat[Times]
             result = new BinOp(new Times(), result, factor())
           }
           case IntDiv() => {
-            eat(typeTag[IntDiv])
+            eat[IntDiv]
             result = new BinOp(new IntDiv(), result, factor())
           }
         }
@@ -77,11 +68,11 @@ package Parser {
       while (isPlusMinus(currentToken)) {
         currentToken match {
           case Plus() => {
-            eat(typeTag[Plus])
+            eat[Plus]
             result = new BinOp(new Plus(), result, mult())
           }
           case Minus() => {
-            eat(typeTag[Minus])
+            eat[Minus]
             result = new BinOp(new Minus(), result, mult())
           }
         }
@@ -91,8 +82,8 @@ package Parser {
 
     def assignment_statement(): AST = {
         val varToken = currentToken
-        eat(typeTag[Id])
-        eat(typeTag[AssignToken])
+        eat[Id]
+        eat[AssignToken]
         new Assign(varToken, expr())
     }
 
@@ -105,22 +96,22 @@ package Parser {
     def statement_list(): AST = {
       val childStatements = ArrayBuffer(statement())
       while (currentToken == SemiColon()) {
-        eat(typeTag[SemiColon])
+        eat[SemiColon]
         childStatements += statement()
       }
       new StatementList(childStatements)
     }
 
     def compound_statement(): AST = {
-      eat(typeTag[Begin])
+      eat[Begin]
       val result = statement_list()
-      eat(typeTag[End])
+      eat[End]
       result
     }
 
     def program(): AST = {
       val result = compound_statement()
-      eat(typeTag[Dot])
+      eat[Dot]
       result
     }
 
