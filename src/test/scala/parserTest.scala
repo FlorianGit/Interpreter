@@ -106,4 +106,11 @@ class parserSpec extends FlatSpec {
      assert(parser.program() === StatementList(ArrayBuffer(StatementList(ArrayBuffer(st1, st2, st3, st4, NoOp())), st5)))
    }
 
+   "Incorrect statments" should "throw an exception" in {
+     var lexer = new Lexer("3 ++ 5")
+     var parser = new Parser(lexer)
+     val thrown = intercept[Exception] { parser.expr() }
+     assert (thrown.isInstanceOf[Exception])
+   }
+
 }
