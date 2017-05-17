@@ -1,7 +1,38 @@
 Interpreter
 
-Just a test project to play around a bit with Scala. The idea to write an
-interpreter I got from the blog post "Let's build a simple interpreter", from
-Ruslan's Blog af https://ruslanspivak.com/lsbasi-part1/.
-However, this project might evolve in a different direction, as it is really a
-test project.
+A test project to play around a bit with Scala. The idea to write an
+interpreter comes from the blog post "Let's build a simple interpreter", from
+Ruslan's Blog at https://ruslanspivak.com/lsbasi-part1/.
+
+The interpreter consist of a _lexer_, a _parser_ and an _interpreter_. The _lexer_
+transforms the input string into tokens that the parser recognizes. As an
+example, the expression
+
+    x = 2 + 5 * 6
+
+might get translated to
+
+    Id("x"), EqualSign, IntToken(2), Plus, IntToken(5), Times, IntToken(6).
+
+Note that the lexer does not care about the meaning of the tokens, because that
+is the job of the _parser_. The parser works with a predefined set of rules that
+it recognizes, called a grammar. In the example above, it might recognize an
+assignment statement with an expression on the right. The parser also knows
+about operator precedence and is responsible for making sure that multiplication
+goes before addition.
+The parser produces an abstract syntax tree (AST) to represent the structure that it
+found. The example above would lead to an AST similar to:
+
+                                 Assignment
+                                 /         \
+                                /           \
+                          Var("x")        Plus
+                                         /    \
+                                        /      \
+                                 Number(2)   Times
+                                             /    \
+                                            /      \
+                                    Number(5)    Number(6)
+
+
+Finally, the _interpreter_ would interpret an Abstract syntax tree.
