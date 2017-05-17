@@ -18,7 +18,7 @@ package Parser {
       case Plus() => if (tokenType == typeTag[Plus]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
       case Minus() => if (tokenType == typeTag[Minus]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
       case Times() => if (tokenType == typeTag[Times]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ "expteced, " ++ currentToken.toString)
-      case Div() => if (tokenType == typeTag[Div]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
+      case IntDiv() => if (tokenType == typeTag[IntDiv]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
       case ParenthesisOpen() => if (tokenType == typeTag[ParenthesisOpen]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
       case ParenthesisClose() => if (tokenType == typeTag[ParenthesisClose]) currentToken = lexer.getNextToken() else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
       case Id(_) => if (tokenType == typeTag[Id]) currentToken = lexer.getNextToken else throw new Exception(tokenType.toString ++ " expected, " ++ currentToken.toString)
@@ -46,21 +46,21 @@ package Parser {
     }
 
     def mult(): AST = {
-      def isMultDiv(t: Token) = t match {
-        case Times() | Div() => true
+      def isMultIntDiv(t: Token) = t match {
+        case Times() | IntDiv() => true
         case _ => false
       }
 
       var result = factor()
-      while (isMultDiv(currentToken)) {
+      while (isMultIntDiv(currentToken)) {
         currentToken match {
           case Times() => {
             eat(typeTag[Times])
             result = new BinOp(new Times(), result, factor())
           }
-          case Div() => {
-            eat(typeTag[Div])
-            result = new BinOp(new Div(), result, factor())
+          case IntDiv() => {
+            eat(typeTag[IntDiv])
+            result = new BinOp(new IntDiv(), result, factor())
           }
         }
       }

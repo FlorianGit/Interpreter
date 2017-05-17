@@ -55,7 +55,7 @@ class parserSpec extends FlatSpec {
      lexer = new Lexer("(12/(3+1))")
      parser = new Parser(lexer)
      val threeplusone = BinOp(Plus(), Number(IntConst(3)), Number(IntConst(1)))
-     val total = BinOp(Div(), Number(IntConst(12)), threeplusone)
+     val total = BinOp(IntDiv(), Number(IntConst(12)), threeplusone)
      assert(parser.expr() === total)
 
      lexer = new Lexer("12/(3+1)-1")
@@ -65,7 +65,7 @@ class parserSpec extends FlatSpec {
 
      lexer = new Lexer("10/(12/(3+1)-1)")
      parser = new Parser(lexer)
-     val total3 = BinOp(Div(), Number(IntConst(10)), total2)
+     val total3 = BinOp(IntDiv(), Number(IntConst(10)), total2)
      assert(parser.expr() === total3)
 
      lexer = new Lexer("7+3*(10/(12/(3+1)-1))")
@@ -98,7 +98,7 @@ class parserSpec extends FlatSpec {
      """
      def st1 = Assign(Id("number"), Number(IntConst(2)))
      def st2 = Assign(Id("a"), Var(Id("number")))
-     def st3 = Assign(Id("b"), BinOp(Plus(), BinOp(Times(), Number(IntConst(10)), Var(Id("a"))), BinOp(Div(), BinOp(Times(), Number(IntConst(10)), Var(Id("number"))), Number((IntConst(4))))))
+     def st3 = Assign(Id("b"), BinOp(Plus(), BinOp(Times(), Number(IntConst(10)), Var(Id("a"))), BinOp(IntDiv(), BinOp(Times(), Number(IntConst(10)), Var(Id("number"))), Number((IntConst(4))))))
      def st4 = Assign(Id("c"), BinOp(Minus(), Var(Id("a")), Var(Id("b"))))
      def st5 = Assign(Id("x"), Number(IntConst(10)))
      def lexer = new Lexer(smallProgram)

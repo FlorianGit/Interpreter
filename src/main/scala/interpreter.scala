@@ -30,7 +30,7 @@ package Interpreter {
         case Plus() => evaluate(left) + evaluate(right)
         case Minus() => evaluate(left) - evaluate(right)
         case Times() => evaluate(left) * evaluate(right)
-        case Div() => evaluate(left) / evaluate(right)
+        case IntDiv() => evaluate(left) / evaluate(right)
       }
         case Var(id) => lookup(releaseName(id))
     }

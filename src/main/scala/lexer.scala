@@ -5,7 +5,7 @@ package Lexer {
   case class Plus() extends Token
   case class Minus() extends Token
   case class Times() extends Token
-  case class Div() extends Token
+  case class IntDiv() extends Token
   case class EOF() extends Token
   case class ParenthesisOpen() extends Token
   case class ParenthesisClose() extends Token
@@ -58,7 +58,7 @@ package Lexer {
       }
       case '/' => {
         currentPos += 1
-        new Div()
+        new IntDiv()
       }
       case '(' => {
         currentPos += 1

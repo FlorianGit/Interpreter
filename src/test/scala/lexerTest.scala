@@ -27,7 +27,7 @@ class lexerSpec extends FlatSpec {
      assert(lexer.Lex() === List(ParenthesisOpen(), IntConst(3), Plus(), IntConst(5), ParenthesisClose(), Plus(), ParenthesisOpen(), IntConst(2), Minus(), IntConst(4), ParenthesisClose()))
 
      lexer = new Lexer("7 + 3 * (10 / (12 / (3 + 1) - 1))")
-     assert(lexer.Lex() === List(IntConst(7),Plus(),IntConst(3),Times(),ParenthesisOpen(), IntConst(10), Div(), ParenthesisOpen(), IntConst(12), Div(), ParenthesisOpen(), IntConst(3), Plus(), IntConst(1), ParenthesisClose(), Minus(), IntConst(1), ParenthesisClose(), ParenthesisClose()))
+     assert(lexer.Lex() === List(IntConst(7),Plus(),IntConst(3),Times(),ParenthesisOpen(), IntConst(10), IntDiv(), ParenthesisOpen(), IntConst(12), IntDiv(), ParenthesisOpen(), IntConst(3), Plus(), IntConst(1), ParenthesisClose(), Minus(), IntConst(1), ParenthesisClose(), ParenthesisClose()))
    }
 
    "Assignment" should "work correctly" in {
@@ -54,7 +54,7 @@ class lexerSpec extends FlatSpec {
      """
      def st1 = List(Id("number"), AssignToken(), IntConst(2), SemiColon())
      def st2 = List(Id("a"), AssignToken(), Id("number"), SemiColon())
-     def st3 = List(Id("b"), AssignToken(), IntConst(10), Times(), Id("a"), Plus(), IntConst(10), Times(), Id("number"), Div(), IntConst(4), SemiColon())
+     def st3 = List(Id("b"), AssignToken(), IntConst(10), Times(), Id("a"), Plus(), IntConst(10), Times(), Id("number"), IntDiv(), IntConst(4), SemiColon())
      def st4 = List(Id("c"), AssignToken(), Id("a"), Minus(), Id("b"), SemiColon())
      def st5 = List(Id("x"), AssignToken(), IntConst(10))
      def lexer = new Lexer(smallProgram)
