@@ -55,7 +55,7 @@ class parserSpec extends FlatSpec {
      lexer = new Lexer("(12/(3+1))")
      parser = new Parser(lexer)
      val threeplusone = BinOp(Plus(), Number(IntConst(3)), Number(IntConst(1)))
-     val total = BinOp(IntDiv(), Number(IntConst(12)), threeplusone)
+     val total = BinOp(FloatDiv(), Number(IntConst(12)), threeplusone)
      assert(parser.expr() === total)
 
      lexer = new Lexer("12/(3+1)-1")
@@ -65,7 +65,7 @@ class parserSpec extends FlatSpec {
 
      lexer = new Lexer("10/(12/(3+1)-1)")
      parser = new Parser(lexer)
-     val total3 = BinOp(IntDiv(), Number(IntConst(10)), total2)
+     val total3 = BinOp(FloatDiv(), Number(IntConst(10)), total2)
      assert(parser.expr() === total3)
 
      lexer = new Lexer("7+3*(10/(12/(3+1)-1))")
@@ -86,11 +86,15 @@ class parserSpec extends FlatSpec {
 
    "A small program" should "be parsed correctly" in {
      val smallProgram = """
+     PROGRAM testprogram;
+     VAR
+     testint: INTEGER;
+     testfloat1, testfloat2: FLOAT;
      BEGIN
         BEGIN
            number := 2;
            a := number;
-           b := 10 * a + 10 * number / 4;
+           b := 10 * a + 10 * number div 4;
            c := a - b;
         END;
         x := 10
@@ -103,7 +107,12 @@ class parserSpec extends FlatSpec {
      def st5 = Assign(Id("x"), Number(IntConst(10)))
      def lexer = new Lexer(smallProgram)
      def parser = new Parser(lexer)
-     assert(parser.program() === StatementList(ArrayBuffer(StatementList(ArrayBuffer(st1, st2, st3, st4, NoOp())), st5)))
+     def compStats = StatementList(ArrayBuffer(StatementList(ArrayBuffer(st1, st2, st3, st4, NoOp())), st5))
+     def decl1 = Declaration(ArrayBuffer(Id("testint")), Integer())
+     def decl2 = Declaration(ArrayBuffer(Id("testfloat1"), Id("testfloat2")), FloatKeyword())
+     def vardecls = DeclarationList(ArrayBuffer(decl1, decl2))
+     def block = Block(vardecls, compStats)
+     assert(parser.program() === Prog(Var(Id("testprogram")), block))
    }
 
    "Incorrect statments" should "throw an exception" in {

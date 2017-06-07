@@ -42,7 +42,16 @@ Finally, the _interpreter_ would interpret an Abstract syntax tree.
 Currently, the grammar that the interpreter recognizes consists of the following
 rules:
 
-    program: compound_statement
+    program: PROGRAM variable SEMICOLON block DOT
+
+    block: declarations compound_statement
+
+    declarations: VAR (variable_declaration SEMI)+
+                | empty
+
+    variable_declaration: ID (COMMA ID)* COLON type_spec
+
+    type_spec: INTEGER | REAL
 
     compound statement: BEGIN statement_list END
 
@@ -54,11 +63,16 @@ rules:
 
     expression: term ( (PLUS | MINUS) term )*
 
-    term: factor ( (TIMES | DIV) factor ) *
+    term: factor ( (TIMES | INT_DIV | FLOAT_DIV) factor ) *
 
     factor: LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
-          | INT
-          | VARIABLE
+          | INT_CONST
+          | FLOAT_CONST
+          | variable
+
+    variable: ID
+
+    empty :
 
 The left of each colon is the name of the rule. The right of the colon describes
 what kind of token combinations are described by the rule. If something is not
